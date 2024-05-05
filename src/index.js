@@ -13,4 +13,9 @@ const client = new Client({
     ],
 })
 
+// when the bot turns on
+client.on('ready', e => { 
+    console.log(`${e.user.tag} is on`) 
+})
+
 client.login(process.env.TOKEN|| '') // <------ Enter TOKEN here!!
