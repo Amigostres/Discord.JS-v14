@@ -26,9 +26,21 @@ client.on('messageCreate', msg => {
     console.log('==================================');
     //message docs
     //https://discord.js.org/docs/packages/discord.js/14.15.0/Message:Class
-    console.log(`${msg.author.username} just said: ${msg.content}`);
+    //console.log(`${msg.author.username} just said: ${msg.content}`);
 
     msg.reply("I heard you!!")// reply to the user who sent the msg
+
+})
+
+//this will interact with '/' commands
+client.on('interactionCreate', interaction => {
+    if(!interaction.isChatInputCommand()) return
+    //https://discord.js.org/docs/packages/discord.js/14.15.0/ChatInputCommandInteraction:Class
+    console.log(interaction.commandName);
+    //if user uses /hello .... replay to them.
+    if (interaction.commandName === 'hello') {
+        interaction.reply('you just said hello with /hello')
+    }
 
 })
 
