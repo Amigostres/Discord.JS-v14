@@ -35,6 +35,7 @@ client.on('messageCreate', msg => {
 //this will interact with '/' commands
 client.on('interactionCreate', interaction => {
     if(!interaction.isChatInputCommand()) return
+
     //https://discord.js.org/docs/packages/discord.js/14.15.0/ChatInputCommandInteraction:Class
     console.log(interaction.commandName);
     //if user uses /hello .... replay to them.
@@ -42,6 +43,13 @@ client.on('interactionCreate', interaction => {
         interaction.reply('you just said hello with /hello')
     }
 
+    if (interaction.commandName === 'add') {
+        let firstNum = interaction.options.get('first-number').value;
+        let secondNum = interaction.options.get('second-number').value;
+        let result = firstNum + secondNum
+        interaction.reply(`the result is ${result}`)
+    }
+    
 })
 
-client.login(process.env.TOKEN|| '') // <------ Enter TOKEN here!!
+client.login(process.env.TOKEN || '') // <------ Enter TOKEN here!!
