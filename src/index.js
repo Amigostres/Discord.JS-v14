@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 //client is going to be our bot
 const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus } = require('@discordjs/voice');
+const { fetchGPTResponse } = require('./gpt'); // Import the function from gpt.js
 
 const client = new Client({
     //intens are basically are "a set of permissions that your bot can use in order to get access a set of events"
@@ -36,7 +37,7 @@ client.on('messageCreate', msg => {
 })
 
 //this will interact with '/' commands
-client.on('interactionCreate', interaction => {
+client.on('interactionCreate', async interaction => {
     if(!interaction.isChatInputCommand()) return
 
     //https://discord.js.org/docs/packages/discord.js/14.15.0/ChatInputCommandInteraction:Class
@@ -84,6 +85,19 @@ client.on('interactionCreate', interaction => {
             interaction.reply('You need to join a voice channel first!')
         }
         
+    }
+
+    //gpt reaction
+    if (interaction.commandName === 'baba') {
+        const userPrompt = interaction.options.getString('prompt') // Make sure your command has an 'input' option
+        if (!userPrompt) {
+            interaction.reply("Please provide a valid prompt.");
+            return;
+        }
+        console.log("Received prompt:", userPrompt);  // This should show the actual prompt or reveal if it's null
+
+        const gptResponse = await fetchGPTResponse(userPrompt);
+        interaction.reply(gptResponse);
     }
 
 })

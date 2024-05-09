@@ -9,7 +9,7 @@ const commands = [
         name: 'hello', //names cannot have spaces
         description: 'greets you back'
     },
-    {
+    /*{
         //add 2 values
         name: 'add',
         description: 'the sum of 2 values',
@@ -28,11 +28,23 @@ const commands = [
                 required: true,
             }
         ]
-    },
+    },*/
     {
         name: 'boss',
         description: 'makes a terraria boss noise'
     },
+    {
+        name: 'baba',
+        description: 'gpt and elevenlabs',
+        options: [
+            {
+                name: 'prompt',
+                description: 'enter prompt',
+                type: ApplicationCommandOptionType.String,
+                required:true
+            }
+        ]
+    }
 
 ]
 
