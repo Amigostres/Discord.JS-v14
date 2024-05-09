@@ -1,8 +1,10 @@
+require('dotenv').config()
 //the docs: https://discord.js.org/docs/packages/discord.js/14.15.0
 const { Client, IntentsBitField } = require('discord.js')
+const fs = require('fs');
+const path = require('path');
 //client is going to be our bot
-
-require('dotenv').config()
+const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus } = require('@discordjs/voice');
 
 const client = new Client({
     //intens are basically are "a set of permissions that your bot can use in order to get access a set of events"
@@ -11,6 +13,7 @@ const client = new Client({
         IntentsBitField.Flags.GuildMembers, //server members
         IntentsBitField.Flags.GuildMessages, //listen for messages
         IntentsBitField.Flags.MessageContent, //content of the message
+        IntentsBitField.Flags.GuildVoiceStates //voice
     ],
 })
 
@@ -49,7 +52,40 @@ client.on('interactionCreate', interaction => {
         let result = firstNum + secondNum
         interaction.reply(`the result is ${result}`)
     }
-    
+
+    if (interaction.commandName === 'boss') {
+        //check if user is inside a VC
+        if (interaction.member.voice.channel) {
+            //create a connection to the vc where the user is
+            const connection = joinVoiceChannel({
+                channelId: interaction.member.voice.channel.id,
+                guildId: interaction.guildId,
+                adapterCreator: interaction.guild.voiceAdapterCreator,
+            })
+
+            //create a audio players
+            const player = createAudioPlayer()
+            // Create an audio resource from the MP3 file
+            const resource = createAudioResource(path.join(__dirname, '../terrariaBossSound.mp3'))
+            player.play(resource); //Play the audio resource
+            connection.subscribe(player) // links the audio player to the voice connection
+
+            //event listener when it starts playing
+            player.on(AudioPlayerStatus.Playing, () => {
+                //console.log('The audio is now playing!')
+            })
+
+            //event listener when it stops playing
+            player.on(AudioPlayerStatus.Idle, () => {
+                console.log('Playback has stopped!')
+                connection.destroy(); // This will disconnect the bot from the channel after playback
+            })
+        } else {// if user is not in a channel
+            interaction.reply('You need to join a voice channel first!')
+        }
+        
+    }
+
 })
 
 client.login(process.env.TOKEN || '') // <------ Enter TOKEN here!!

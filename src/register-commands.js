@@ -29,6 +29,10 @@ const commands = [
             }
         ]
     },
+    {
+        name: 'boss',
+        description: 'makes a terraria boss noise'
+    },
 
 ]
 
