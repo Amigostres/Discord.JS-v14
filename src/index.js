@@ -103,7 +103,7 @@ client.on('interactionCreate', async interaction => {
             await interaction.reply("Please provide a valid prompt.")
             return
         }
-
+        console.log(`${interaction.member}: ${userPrompt}`);
         try {
             const defer = await interaction.deferReply({ ephemeral: true })
         if (!defer) {
