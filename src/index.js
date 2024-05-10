@@ -6,6 +6,8 @@ const path = require('path');
 //client is going to be our bot
 const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus } = require('@discordjs/voice');
 const { fetchGPTResponse } = require('./gpt'); // Import the function from gpt.js
+const { synthesizeSpeech } = require('./elevenLabs')
+const { playAudioInChannel } = require('./voiceHandler.js')
 
 const client = new Client({
     //intens are basically are "a set of permissions that your bot can use in order to get access a set of events"
@@ -89,15 +91,41 @@ client.on('interactionCreate', async interaction => {
 
     //gpt reaction
     if (interaction.commandName === 'baba') {
-        const userPrompt = interaction.options.getString('prompt') // Make sure your command has an 'input' option
-        if (!userPrompt) {
-            interaction.reply("Please provide a valid prompt.");
-            return;
+        const voiceChannel = interaction.member.voice.channel
+        if (!voiceChannel) {
+            await interaction.reply("You need to be in a voice channel to use this command.")
+            return
         }
-        console.log("Received prompt:", userPrompt);  // This should show the actual prompt or reveal if it's null
 
-        const gptResponse = await fetchGPTResponse(userPrompt);
-        interaction.reply(gptResponse);
+        //user input
+        const userPrompt = interaction.options.getString('prompt')
+        if (!userPrompt) {
+            await interaction.reply("Please provide a valid prompt.")
+            return
+        }
+
+        try {
+            const defer = await interaction.deferReply({ ephemeral: true })
+        if (!defer) {
+            throw new Error("Failed to defer reply")
+        }
+
+        // Provide an initial feedback on discord
+        await interaction.followUp({ content: "Processing your request...", ephemeral: true })
+
+        const gptResponse = await fetchGPTResponse(userPrompt) // GPT response
+        const fileName = await synthesizeSpeech(gptResponse) // Synthesize speech with ElevenLabs
+
+        // feedback on discord of voice is made
+        await interaction.editReply({ content: "voice is now done, now playing audio..." })
+
+        await playAudioInChannel(voiceChannel, `${fileName}`) // Play it
+        await interaction.editReply({ content: "This interaction is now complete." })
+        await interaction.deleteReply()
+        } catch (error) {
+            console.error("Error during speech synthesis or playback:", error)
+            await interaction.editReply({ content: "Failed to speak.", ephemeral: true })
+        }
     }
 
 })
