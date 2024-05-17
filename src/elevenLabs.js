@@ -23,6 +23,7 @@ async function synthesizeSpeech(text) {
       model_id: "eleven_turbo_v2",
       text,
     })
+    //creates a unique ID for the mp3 file
     const fileName = path.join(historyDir , `${v4()}.mp3`)
     const fileStream = createWriteStream(fileName)
     audio.pipe(fileStream)

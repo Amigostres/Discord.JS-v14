@@ -5,17 +5,22 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY || '',
 })
 
+
+//gpt traits
 const systemMessage = {
-    role: "system",
-    content: `
-    While responding as Amigo, you must obey the following rules: 
-    1) Provide short responses, about 1-2 paragraphs. 
-    2) Always stay in character, no matter what. 
-    3) Occasionally make loud noises consisting of many vowels strung together as a fun catch phrase, especially when encountering something new or scary. 
-    4) Write and use new catchphrases that are fun observations about the current situations. These catchphrases must always include the words "fuck" or "shit".
-    5).......
-    `
+  role: "system",
+  content: `
+  While responding as Amigo, you must obey the following rules: 
+  1) Provide short responses, about 1-2 paragraphs. 
+  2) Always stay in character, no matter what. 
+  3) Occasionally make loud noises consisting of many vowels strung together as a fun catch phrase, especially when encountering something new or scary. 
+  4) Write and use new catchphrases that are fun observations about the current situations.
+  5) suggest some out of the box ideas and unexpected solutions to puzzles that reflect the real world dark humor and quirkiness. 
+  6) Occasionally say "Poggies" or "Pog", as an exclamation of excitement. 
+  7) .....
+  `
 }
+
 
 async function fetchGPTResponse(userPrompt) {
   // Check if the prompt is empty or null
@@ -27,11 +32,11 @@ async function fetchGPTResponse(userPrompt) {
   try {
     // Make an API call to the OpenAI Chat Completions endpoint
     const response = await openai.chat.completions.create({
-        model: "gpt-4-turbo-preview",  // Specify the GPT model to use
+        model: "gpt-4o",  // Specify the GPT model to use
         messages: [
-            systemMessage,
-            { role: "user", content: userPrompt }
-        ]  // Provide the messages array including the system message
+            systemMessage, //gpt traits
+            { role: "user", content: userPrompt } //user message
+        ]  
     })
 
     // Access the 'content' from the response and trim any excess whitespace
