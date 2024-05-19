@@ -20,6 +20,9 @@ const client = new Client({
     ],
 })
 
+
+let MostResentfileName = 'terrariaBossSound.mp3';
+
 // when the bot turns on
 client.on('ready', e => { 
     console.log(`${e.user.tag} is on`) 
@@ -110,6 +113,7 @@ client.on('interactionCreate', async interaction => {
 
         const gptResponse = await fetchGPTResponse(userPrompt) // GPT response
         const fileName = await synthesizeSpeech(gptResponse) // Synthesize speech with ElevenLabs
+        MostResentfileName = fileName //This saves it so it can be repeated for /echo
 
         // feedback on discord of voice is made
         await interaction.editReply({ content: "voice is now done, now playing audio..." })
@@ -117,6 +121,23 @@ client.on('interactionCreate', async interaction => {
         await playAudioInChannel(voiceChannel, `${fileName}`) // Play it
         await interaction.editReply({ content: "This interaction is now complete." })
         await interaction.deleteReply()
+        } catch (error) {
+            console.error("Error during speech synthesis or playback:", error)
+            await interaction.editReply({ content: "Failed to speak.", ephemeral: true })
+        }
+    }
+
+    //repeats what it last said
+    if (interaction.commandName === 'echo') {
+        const voiceChannel = interaction.member.voice.channel
+        if (!voiceChannel) {
+            await interaction.reply("You need to be in a voice channel to use this command.")
+            return
+        }
+        try {
+            // Provide an initial feedback on discord
+            console.log(`attempting to echo`);
+            await playAudioInChannel(voiceChannel, `${MostResentfileName}`) // Play it
         } catch (error) {
             console.error("Error during speech synthesis or playback:", error)
             await interaction.editReply({ content: "Failed to speak.", ephemeral: true })

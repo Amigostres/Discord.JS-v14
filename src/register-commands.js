@@ -44,6 +44,10 @@ const commands = [
                 required:true
             }
         ]
+    },
+    {
+        name: 'echo',
+        description: 'repeats the last thing the bot just had said',
     }
 
 ]
