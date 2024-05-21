@@ -127,6 +127,44 @@ client.on('interactionCreate', async interaction => {
         }
     }
 
+    if (interaction.commandName === 'bubu') {
+        const voiceChannel = interaction.member.voice.channel
+        if (!voiceChannel) {
+            await interaction.reply("You need to be in a voice channel to use this command.")
+            return
+        }
+
+        //user input
+        const userPrompt = interaction.options.getString('prompt')
+        if (!userPrompt) {
+            await interaction.reply("Please provide a valid prompt.")
+            return
+        }
+        console.log(`${interaction.member}: ${userPrompt}`);
+        try {
+            const defer = await interaction.deferReply({ ephemeral: true })
+        if (!defer) {
+            throw new Error("Failed to defer reply")
+        }
+
+        // Provide an initial feedback on discord
+        await interaction.followUp({ content: "Processing your request...", ephemeral: true })
+
+        const fileName = await synthesizeSpeech(userPrompt) // Synthesize speech with ElevenLabs
+        MostResentfileName = fileName //This saves it so it can be repeated for /echo
+
+        // feedback on discord of voice is made
+        await interaction.editReply({ content: "voice is now done, now playing audio..." })
+
+        await playAudioInChannel(voiceChannel, `${fileName}`) // Play it
+        await interaction.editReply({ content: "This interaction is now complete." })
+        await interaction.deleteReply()
+        } catch (error) {
+            console.error("Error during speech synthesis or playback:", error)
+            await interaction.editReply({ content: "Failed to speak.", ephemeral: true })
+        }
+    }
+
     //repeats what it last said
     if (interaction.commandName === 'echo') {
         const voiceChannel = interaction.member.voice.channel

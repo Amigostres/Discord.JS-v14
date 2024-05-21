@@ -45,6 +45,19 @@ const commands = [
             }
         ]
     },
+    //this is optional, this can have direct control of the voice.
+    {
+        name: 'bubu',
+        description: 'elevenlabs only',
+        options: [
+            {
+                name: 'prompt',
+                description: 'enter prompt',
+                type: ApplicationCommandOptionType.String,
+                required:true
+            }
+        ]
+    },
     {
         name: 'echo',
         description: 'repeats the last thing the bot just had said',
